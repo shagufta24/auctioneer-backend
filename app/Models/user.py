@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
-from custom_exceptions.email_exists import EmailAlreadyExistsException
-from database_handler import DatabaseHandler
+
+from auctioneer_server.app.custom_exceptions.email_exists import EmailAlreadyExistsException
+from auctioneer_server.app.database_handler import DatabaseHandler
 
 
 @dataclass
@@ -18,6 +19,7 @@ class User:
         db_handler = DatabaseHandler()
         if self.verify_existence(self.email, db_handler):
             raise EmailAlreadyExistsException()
+
         uid = db_handler.add_record(user_dict, "users")
         db_handler.close()
         return uid
@@ -27,6 +29,7 @@ class User:
         db_handler = DatabaseHandler()
         condition = {"email": email}
         record = db_handler.get_single_record(condition, "users")
+        record["_id"] = str(record['_id'])
         db_handler.close()
         return record
 

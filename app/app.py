@@ -36,12 +36,14 @@ def create_token():
         return {"msg": "Bad request"}, 400
 
     try:
-        uid = User(email, generate_password_hash(password), first_name, last_name, gender).create_user()
+        uid = User(email, generate_password_hash(password),
+                   first_name, last_name, gender).create_user()
     except EmailAlreadyExistsException as ex:
         return {"msg": "Something went wrong", "error": ex.message}, 400
 
     access_token = create_access_token(identity=email)
-    resp = jsonify({"msg": "success", "access_token": access_token, "user": uid})
+    resp = jsonify(
+        {"msg": "success", "access_token": access_token, "user": uid})
     return resp, 200
 
 
@@ -57,7 +59,8 @@ def login():
         user_record = User.get_user(email)
         if user_record and check_password_hash(user_record['password'], password):
             access_token = create_access_token(identity=email)
-            resp = jsonify({"msg": "success", "access_token": access_token, "user": str(user_record["_id"])})
+            resp = jsonify(
+                {"msg": "success", "access_token": access_token, "user": str(user_record["_id"])})
             return resp, 200
 
         return {"msg": "Authentication failed! Please create an account or check your email and password"}, 401
@@ -71,8 +74,6 @@ def logout():
     resp = jsonify({'logout': True})
     unset_jwt_cookies(resp)
     return resp, 200
-
-
 
 
 @api.route("/listing", methods=["POST", "GET"])
@@ -89,12 +90,10 @@ def listing_route():
             specs = doc.get('specs')
             max_cost = doc.get('max_cost')
             image = doc.get('image')
-            print(doc)
             _id = Listing(name=name, specs=specs, features=features, cost=cost, desc=desc, subtitle=subtitle,
                           max_cost=max_cost, image=image).create_listing()
             print(_id)
             rec = Listing.get_listing(_id)
-            print(rec)
             return {"msg": "Success"}, 200
         except Exception as ex:
             return {"msg": "Something went wrong", "error": str(ex)}, 400
@@ -103,14 +102,14 @@ def listing_route():
         record = Listing.get_listing(doc_id)
         current_ts = datetime.now()
         stored_ts = datetime.fromtimestamp(record['timestamp'])
-        td = (current_ts - stored_ts).days * 24 * 60 + (current_ts - stored_ts).seconds / 60
+        td = (current_ts - stored_ts).days * 24 * 60 + \
+             (current_ts - stored_ts).seconds / 60
 
         if td >= BID_EXPIRY_TIME and len(record['bids']) > 0:
             print("IN HERE LOL")
             Listing.sell_listing(record["bids"][-1]['user'], doc_id)
 
         record = Listing.get_listing(doc_id)
-        print(record)
         return {"msg": "success", "listing": record}, 200
 
 
@@ -146,5 +145,9 @@ def get_listings_for_user():
     return {"msg": "success", "listings": listings_for_user}, 200
 
 
-if __name__ == '__main__':
-    api.run()
+@api.route("/user", methods=["GET"])
+@cross_origin()
+def get_user():
+    user_email = request.args.get("email")
+    user_info = User.get_user(user_email)
+    return {"msg": "success", "user": user_info}, 200

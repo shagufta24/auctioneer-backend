@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
-from database_handler import DatabaseHandler
 from bson.objectid import ObjectId
 from datetime import datetime
+
+from auctioneer_server.app.database_handler import DatabaseHandler
 
 
 @dataclass
