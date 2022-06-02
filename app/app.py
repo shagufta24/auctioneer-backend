@@ -7,14 +7,16 @@ from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
     unset_jwt_cookies, jwt_required, JWTManager, create_refresh_token, set_refresh_cookies
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.Models.listing import Listing
 from app.Models.user import User
 from app.custom_exceptions.email_exists import EmailAlreadyExistsException
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-
 from app.database_handler import DatabaseHandler
+# from Models.listing import Listing
+# from Models.user import User
+# from custom_exceptions.email_exists import EmailAlreadyExistsException
+# from database_handler import DatabaseHandler
 
 api = Flask(__name__)
 cors = CORS(api, supports_credentials=True)
@@ -93,28 +95,24 @@ def listing_route():
             specs = doc.get('specs')
             max_cost = doc.get('max_cost')
             image = doc.get('image')
+            created_by = doc.get("created_by")
             _id = Listing(name=name, specs=specs, features=features, cost=cost, desc=desc, subtitle=subtitle,
-                          max_cost=max_cost, image=image).create_listing()
+                          max_cost=max_cost, image=image, created_by=created_by).create_listing()
             print(_id)
-            rec = Listing.get_listing(_id)
             return {"msg": "Success"}, 200
         except Exception as ex:
             return {"msg": "Something went wrong", "error": str(ex)}, 400
     elif request.method == "GET":
         doc_id = request.args.get("id")
         record = Listing.get_listing(doc_id)
-        current_ts = datetime.now()
-        stored_ts = datetime.fromtimestamp(record['timestamp'])
-        td = (current_ts - stored_ts).days * 24 * 60 + \
-             (current_ts - stored_ts).seconds / 60
-
-        if td >= BID_EXPIRY_TIME and len(record['bids']) > 0:
-            print("IN HERE LOL")
-            Listing.sell_listing(record["bids"][-1]['user'], doc_id)
-
-
-        record = Listing.get_listing(doc_id)
         return {"msg": "success", "listing": record}, 200
+
+
+@api.route("/my-listings", methods=["GET"])
+def get_my_listings():
+    user_id = request.args.get("user_id")
+    listings = Listing.get_my_listings(user_id)
+    return {"msg": "success", "listings": listings}, 200
 
 
 @api.route("/listings", methods=["GET"])

@@ -1,14 +1,15 @@
 import pymongo
 from dotenv import load_dotenv
-from app.GLOBALS import GLOBALS
 from bson.json_util import dumps
 
+from app.GLOBALS import GLOBALS
+# from GLOBALS import GLOBALS
 
 class DatabaseHandler:
     def __init__(self):
         env_vars = GLOBALS()
         self.client = pymongo.MongoClient(
-            f"mongodb+srv://{env_vars.DB_USERNAME}:{env_vars.DB_PASSWORD}@cluster0.4eu2v.mongodb.net/{env_vars.DB_NAME}"
+            f"mongodb+srv://{env_vars.DB_USERNAME}:{env_vars.DB_PASSWORD}@cluster0.t20dd.mongodb.net/{env_vars.DB_NAME}"
             f"?retryWrites=true&w=majority")
         self.db = self.client[env_vars.DB_NAME]
 

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
-
 from app.custom_exceptions.email_exists import EmailAlreadyExistsException
 from app.database_handler import DatabaseHandler
+# from custom_exceptions.email_exists import EmailAlreadyExistsException
+# from database_handler import DatabaseHandler
 
 
 @dataclass
