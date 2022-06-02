@@ -1,6 +1,6 @@
 import pymongo
 from dotenv import load_dotenv
-from GLOBALS import GLOBALS
+from app.GLOBALS import GLOBALS
 from bson.json_util import dumps
 
 

@@ -7,12 +7,14 @@ from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
     unset_jwt_cookies, jwt_required, JWTManager, create_refresh_token, set_refresh_cookies
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
-from Models.listing import Listing
-from Models.user import User
-from custom_exceptions.email_exists import EmailAlreadyExistsException
-from database_handler import DatabaseHandler
+
+from app.Models.listing import Listing
+from app.Models.user import User
+from app.custom_exceptions.email_exists import EmailAlreadyExistsException
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+
+from app.database_handler import DatabaseHandler
 
 api = Flask(__name__)
 cors = CORS(api, supports_credentials=True)
@@ -22,6 +24,7 @@ jwt = JWTManager(api)
 
 db_handler = DatabaseHandler()
 BID_EXPIRY_TIME = 1
+NO_BIDS_EXPIRY_TIME = 100
 
 
 @api.route('/register', methods=["POST"])
@@ -108,6 +111,7 @@ def listing_route():
         if td >= BID_EXPIRY_TIME and len(record['bids']) > 0:
             print("IN HERE LOL")
             Listing.sell_listing(record["bids"][-1]['user'], doc_id)
+
 
         record = Listing.get_listing(doc_id)
         return {"msg": "success", "listing": record}, 200

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from bson.objectid import ObjectId
 from datetime import datetime
 
-from auctioneer_server.app.database_handler import DatabaseHandler
+from app.database_handler import DatabaseHandler
 
 
 @dataclass
@@ -85,3 +85,4 @@ class Listing:
             cleaned_records.append(r)
         print(cleaned_records)
         return cleaned_records
+

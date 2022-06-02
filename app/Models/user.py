@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 
-from auctioneer_server.app.custom_exceptions.email_exists import EmailAlreadyExistsException
-from auctioneer_server.app.database_handler import DatabaseHandler
+from app.custom_exceptions.email_exists import EmailAlreadyExistsException
+from app.database_handler import DatabaseHandler
 
 
 @dataclass
