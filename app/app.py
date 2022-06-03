@@ -25,9 +25,8 @@ api.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
 jwt = JWTManager(api)
 
 db_handler = DatabaseHandler()
-BID_EXPIRY_TIME = 1
+BID_EXPIRY_TIME = 5
 NO_BIDS_EXPIRY_TIME = 100
-
 
 @api.route('/register', methods=["POST"])
 @cross_origin()
